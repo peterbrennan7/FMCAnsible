@@ -23,6 +23,16 @@ from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
 import copy
+
+import logging
+logger = logging.getLogger(__name__)
+
+logging.basicConfig(filename="fmc.log",
+                            filemode='a',
+                            format='%(asctime)s,%(msecs)d %(name)s %(levelname)s %(message)s',
+                            datefmt='%H:%M:%S',
+                            level=logging.DEBUG)
+
 from functools import partial
 
 from ansible.module_utils.six import iteritems
@@ -196,6 +206,7 @@ class OperationChecker(object):
 
     @classmethod
     def is_upsert_operation_supported(cls, operations):
+        logging.debug("enter is_upsert_operation_supported")
         """
         Checks if all operations required for upsert object operation are defined in 'operations'.
 
@@ -248,7 +259,14 @@ class BaseConfigurationResource(object):
         :return: Result of the operation being executed
         :rtype: dict
         """
+
+        logging.debug("crud_operation")
+
+        logging.debug("op_name:" + op_name)
+
         op_spec = self.get_operation_spec(op_name)
+        logging.debug("op_spec:")
+        logging.debug(op_spec)
         if op_spec is None:
             raise FmcInvalidOperationNameError(op_name)
 
@@ -265,11 +283,22 @@ class BaseConfigurationResource(object):
         return resp
 
     def get_operation_spec(self, operation_name):
+        logging.debug("enter get_operation_spec")
+        logging.debug("operation_name:"+operation_name)
+        logging.debug("self._operation_spec_cache:")
+        logging.debug(self._operation_spec_cache)
+
+
         if operation_name not in self._operation_spec_cache:
             self._operation_spec_cache[operation_name] = self._conn.get_operation_spec(operation_name)
+
+        logging.debug("self._operation_spec_cache[operation_name]:")
+        logging.debug(self._operation_spec_cache[operation_name])    
         return self._operation_spec_cache[operation_name]
 
     def get_operation_specs_by_model_name(self, model_name):
+        logging.debug("enter get_operation_specs_by_model_name")
+
         if model_name not in self._models_operations_specs_cache:
             model_op_specs = self._conn.get_operation_specs_by_model_name(model_name)
             self._models_operations_specs_cache[model_name] = model_op_specs
@@ -278,8 +307,10 @@ class BaseConfigurationResource(object):
         return self._models_operations_specs_cache[model_name]
 
     def get_objects_by_filter(self, operation_name, params):
+        logging.debug("enter get_objects_by_filter")
 
         def match_filters(filter_params, obj):
+            logging.debug("enter match_filters")
             for k, v in iteritems(filter_params):
                 if k not in obj or obj[k] != v:
                     return False
@@ -477,6 +508,7 @@ class BaseConfigurationResource(object):
         return self.edit_object(edit_op_name, params)
 
     def upsert_object(self, op_name, params):
+        logging.debug("enter upsert_object")
         """
         Updates an object if it already exists, or tries to create a new one if there is no
         such object. If multiple objects match filter criteria, or add operation is not supported,

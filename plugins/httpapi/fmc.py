@@ -50,6 +50,14 @@ options:
 import json
 import os
 import re
+import logging
+logger = logging.getLogger(__name__)
+
+logging.basicConfig(filename="fmc.log",
+                            filemode='a',
+                            format='%(asctime)s,%(msecs)d %(name)s %(levelname)s %(message)s',
+                            datefmt='%H:%M:%S',
+                            level=logging.DEBUG)
 
 from ansible import __version__ as ansible_version
 
@@ -105,6 +113,8 @@ class HttpApi(HttpApiBase):
         self._ignore_http_errors = False
 
     def login(self, username, password):
+        logging.debug("enter login")
+
         def request_token_payload(username, password):
             return {
                 'grant_type': 'password',
@@ -357,9 +367,11 @@ class HttpApi(HttpApiBase):
             raise ConnectionError('Invalid JSON response: %s' % response_text)
 
     def get_operation_spec(self, operation_name):
+        logging.debug("enter get_operation_spec")
         return self.api_spec[SpecProp.OPERATIONS].get(operation_name, None)
 
     def get_operation_specs_by_model_name(self, model_name):
+        logging.debug("get_operation_specs_by_model_name: " + model_name)
         if model_name:
             return self.api_spec[SpecProp.MODEL_OPERATIONS].get(model_name, None)
         else:
@@ -379,8 +391,12 @@ class HttpApi(HttpApiBase):
 
     @property
     def api_spec(self):
+        logging.debug("enter api_spec")
+
         if self._api_spec is None:
             spec_path_url = self._get_api_spec_path()
+            logging.debug("spec_path_url:")
+            logging.debug(spec_path_url)
             response = (self.send_request(url_path=spec_path_url, http_method=HTTPMethod.GET))
             if response[ResponseParams.SUCCESS]:
                 self._api_spec = FmcSwaggerParser().parse_spec(response[ResponseParams.RESPONSE])

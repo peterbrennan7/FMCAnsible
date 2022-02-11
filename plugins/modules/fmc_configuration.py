@@ -102,8 +102,18 @@ from ansible_collections.cisco.fmcansible.plugins.module_utils.fmc_swagger_clien
 from ansible_collections.cisco.fmcansible.plugins.module_utils.common import construct_ansible_facts, FmcConfigurationError, \
     FmcServerError, FmcUnexpectedResponse
 
+import logging
+logger = logging.getLogger(__name__)
 
+logging.basicConfig(filename="fmc.log",
+                            filemode='a',
+                            format='%(asctime)s,%(msecs)d %(name)s %(levelname)s %(message)s',
+                            datefmt='%H:%M:%S',
+                            level=logging.DEBUG)
 def main():
+
+    logging.debug("main")
+
     fields = dict(
         operation=dict(type='str', required=True),
         data=dict(type='dict'),
@@ -120,6 +130,7 @@ def main():
     resource = BaseConfigurationResource(connection, module.check_mode)
     op_name = params['operation']
     try:
+
         resp = resource.execute_operation(op_name, params)
         module.exit_json(changed=resource.config_changed, response=resp,
                          ansible_facts=construct_ansible_facts(resp, module.params))

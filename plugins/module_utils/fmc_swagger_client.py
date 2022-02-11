@@ -30,6 +30,15 @@ __metaclass__ = type
 from ansible_collections.cisco.fmcansible.plugins.module_utils.common import HTTPMethod
 from ansible.module_utils.six import integer_types, string_types, iteritems
 
+import logging
+logger = logging.getLogger(__name__)
+
+logging.basicConfig(filename="fmc.log",
+                            filemode='a',
+                            format='%(asctime)s,%(msecs)d %(name)s %(levelname)s %(message)s',
+                            datefmt='%H:%M:%S',
+                            level=logging.DEBUG)
+
 FILE_MODEL_NAME = '_File'
 SUCCESS_RESPONSE_CODE = '200'
 DELETE_PREFIX = 'delete'
@@ -174,6 +183,7 @@ class FmcSwaggerParser:
                 }
             }
         """
+        logging.debug("here: parse_spec")
         self._definitions = spec[SpecProp.DEFINITIONS]
         # self._base_path = spec[PropName.BASE_PATH]
         self._base_path = ''
@@ -194,6 +204,8 @@ class FmcSwaggerParser:
         return self._base_path
 
     def _get_model_operations(self, operations):
+        logging.debug("enter _get_model_operations")
+
         model_operations = {}
         for operations_name, params in iteritems(operations):
             model_name = params[OperationField.MODEL_NAME]
@@ -201,8 +213,14 @@ class FmcSwaggerParser:
         return model_operations
 
     def _get_operations(self, spec):
+        logging.debug("enter _get_operations")
+
         paths_dict = spec[PropName.PATHS]
         operations_dict = {}
+
+        logging.debug("iteritems(paths_dict):")
+        logging.debug(iteritems(paths_dict))
+
         for url, operation_params in iteritems(paths_dict):
             for method, params in iteritems(operation_params):
                 operation = {
@@ -220,6 +238,7 @@ class FmcSwaggerParser:
         return operations_dict
 
     def _enrich_operations_with_docs(self, operations, docs):
+        logging.debug("enter _enrich_operations_with_docs")
         def get_operation_docs(op):
             op_url = op[OperationField.URL][len(self._base_path):]
             return docs[PropName.PATHS].get(op_url, {}).get(op[OperationField.METHOD], {})
@@ -243,6 +262,7 @@ class FmcSwaggerParser:
         return operations
 
     def _enrich_definitions_with_docs(self, definitions, docs):
+        logging.debug("enter _enrich_definitions_with_docs")
         for model_name, model_def in definitions.items():
             model_docs = docs[SpecProp.DEFINITIONS].get(model_name, {})
             model_def[PropName.DESCRIPTION] = model_docs.get(PropName.DESCRIPTION, '')
@@ -252,6 +272,7 @@ class FmcSwaggerParser:
         return definitions
 
     def _get_model_name(self, method, params):
+        logging.debug("enter _get_model_name")
         if method == HTTPMethod.GET:
             return self._get_model_name_from_responses(params)
         elif method == HTTPMethod.POST or method == HTTPMethod.PUT:
@@ -263,6 +284,7 @@ class FmcSwaggerParser:
 
     @staticmethod
     def _return_multiple_items(op_params):
+        logging.debug("enter _return_multiple_items")
         """
         Defines if the operation returns one item or a list of items.
 
@@ -276,6 +298,7 @@ class FmcSwaggerParser:
             return False
 
     def _get_model_name_from_delete_operation(self, params):
+        logging.debug("enter _get_model_name_from_delete_operation")
         operation_id = params[PropName.OPERATION_ID]
         if operation_id.startswith(DELETE_PREFIX):
             model_name = operation_id[len(DELETE_PREFIX):]
@@ -284,6 +307,8 @@ class FmcSwaggerParser:
         return None
 
     def _get_model_name_for_post_put_requests(self, params):
+        logging.debug("enter _get_model_name_for_post_put_requests")
+
         model_name = None
         if OperationField.PARAMETERS in params:
             y = params[OperationField.PARAMETERS]
@@ -302,9 +327,13 @@ class FmcSwaggerParser:
 
     @staticmethod
     def _get_body_param_from_parameters(params):
+        logging.debug("enter _get_body_param_from_parameters")
+
         return next((param for param in params if param['in'] == 'body'), None)
 
     def _get_model_name_from_responses(self, params):
+        logging.debug("enter _get_model_name_from_responses")
+
         responses = params[PropName.RESPONSES]
         if SUCCESS_RESPONSE_CODE in responses:
             response = responses[SUCCESS_RESPONSE_CODE][PropName.SCHEMA]
@@ -319,6 +348,7 @@ class FmcSwaggerParser:
             return None
 
     def _get_rest_params(self, params, global_param):
+        logging.debug("enter _get_rest_params")
         path = {}
         query = {}
         operation_param = {
@@ -357,14 +387,20 @@ class FmcSwaggerParser:
 
     @staticmethod
     def _simplify_param_def(param):
+        logging.debug("enter _simplify_param_def")
         return {
             PropName.TYPE: param[PropName.TYPE],
             PropName.REQUIRED: param[PropName.REQUIRED]
         }
 
     def _get_model_name_byschema_ref(self, schema_ref):
+        logging.debug("enter _get_model_name_byschema_ref")
         model_name = _get_model_name_from_url(schema_ref)
         model_def = self._definitions[model_name]
+
+        # logging.debug("model_name:" + model_name)
+        # logging.debug("model_def:" + model_def)
+        # logging.debug("PropName.ALL_OF:" + PropName.ALL_OF)
         if PropName.ALL_OF in model_def:
             return self._get_model_name_byschema_ref(model_def[PropName.ALL_OF][0][PropName.REF])
         else:

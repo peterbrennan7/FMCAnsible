@@ -15,7 +15,7 @@
 
     - name: Create a network object for Cisco FMC
       cisco.fmcansible.fmc_configuration:
-        operation: addNetworkObject
+        operation: createNetworkObject
         path_params:
           domainUUID: '{{ cra1[0].uuid }}'
         data:

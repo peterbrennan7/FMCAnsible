@@ -2,27 +2,33 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "Python: Remote Attach",
+            "type": "python",
+            "request": "attach",
+            "connect": {
+                "host": "localhost",
+                "port": 8080
+            },
+            "pathMappings": [
+                {
+                    "localRoot": "${workspaceFolder}",
+                    "remoteRoot": "."
+                }
+            ]
+        },
+        {
             "name": "Ansible Playbook",
             "type": "python",
             "request": "launch",
             "program": "run.py",
             "args": [
                 "playbooks/fmc_configuration/latest.yml",
-                "-i", "/etc/ansible/hosts",
+                "-i",
+                "/etc/ansible/hosts",
                 "-vvvv",
                 "--flush-cache"
             ],
             "console": "integratedTerminal"
-        },
-        {
-            "name": "Python: Remote Attach to Ansible",
-            "type": "python",
-            "request": "attach",
-            "localRoot": "${workspaceFolder}",
-            "remoteRoot": "${workspaceFolder}",
-            "port": 8080,
-            "secret": "ansible",
-            "host": "127.0.0.1"
         }
     ]
 }

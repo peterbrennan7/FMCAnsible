@@ -8,16 +8,10 @@
             "connect": {
                 "host": "localhost",
                 "port": 8080
-            },
-            "pathMappings": [
-                {
-                    "localRoot": "${workspaceFolder}",
-                    "remoteRoot": "."
-                }
-            ]
+            }
         },
         {
-            "name": "Ansible Playbook",
+            "name": "OLD: Ansible Playbook",
             "type": "python",
             "request": "launch",
             "program": "run.py",

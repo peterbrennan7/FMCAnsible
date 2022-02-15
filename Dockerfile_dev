@@ -15,12 +15,13 @@ COPY requirements.txt ${FMC_ANSIBLE_FOLDER}/
 RUN pip install --no-cache-dir -r /${FMC_ANSIBLE_FOLDER}/requirements.txt
 
 COPY test-requirements.txt ${FMC_ANSIBLE_FOLDER}/
+RUN pip install --no-cache-dir -r /${FMC_ANSIBLE_FOLDER}/test-requirements.txt
+
 COPY galaxy.yml ${FMC_ANSIBLE_FOLDER}/
 COPY meta ${FMC_ANSIBLE_FOLDER}/meta
 COPY plugins ${FMC_ANSIBLE_FOLDER}/plugins
 COPY samples ${FMC_ANSIBLE_FOLDER}/samples
 COPY tests ${FMC_ANSIBLE_FOLDER}/tests
-RUN pip install --no-cache-dir -r /${FMC_ANSIBLE_FOLDER}/test-requirements.txt
 EXPOSE 8080
 
 ENV PYTHONPATH="$PYTHONPATH:/${FMC_ANSIBLE_FOLDER}/"

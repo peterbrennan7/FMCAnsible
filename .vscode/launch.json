@@ -1,0 +1,18 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Ansible Playbook",
+            "type": "python",
+            "request": "launch",
+            "program": "run.py",
+            "args": [
+                "playbooks/fmc_configuration/latest.yml",
+                "-i", "/etc/ansible/hosts",
+                "-vvvv",
+                "--flush-cache"
+            ],
+            "console": "integratedTerminal"
+        }
+    ]
+}

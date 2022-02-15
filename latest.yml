@@ -1,21 +1,21 @@
 - hosts: all
   connection: httpapi
   tasks:
-    - name: Create an network object for Cisco FMC
+    - name: Get all FMC domains
       cisco.fmcansible.fmc_configuration:
         operation: getAllDomain
         register_as: cra1
 
-    - name: get all network objects
+    - name: Get all network objects in first FMC domain
       cisco.fmcansible.fmc_configuration:
         operation: getAllNetworkObject
         path_params:
           domainUUID: '{{ cra1[0].uuid }}'
         register_as: cra
 
-    - name: Create an network object for Cisco FMC
+    - name: Create a network object for Cisco FMC
       cisco.fmcansible.fmc_configuration:
-        operation: createNetworkObject
+        operation: addNetworkObject
         path_params:
           domainUUID: '{{ cra1[0].uuid }}'
         data:

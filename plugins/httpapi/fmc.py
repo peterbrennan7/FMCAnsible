@@ -368,6 +368,8 @@ class HttpApi(HttpApiBase):
 
     def get_operation_spec(self, operation_name):
         logging.debug("enter get_operation_spec")
+        logging.debug('all_api_spec:')
+        logging.debug(self.api_spec) 
         return self.api_spec[SpecProp.OPERATIONS].get(operation_name, None)
 
     def get_operation_specs_by_model_name(self, model_name):

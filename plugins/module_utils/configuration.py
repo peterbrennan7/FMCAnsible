@@ -262,6 +262,9 @@ class BaseConfigurationResource(object):
 
         logging.debug("crud_operation")
 
+        logging.debug("all_available_operations:")
+        logging.debug(self._models_operations_specs_cache)
+
         logging.debug("op_name:" + op_name)
 
         op_spec = self.get_operation_spec(op_name)

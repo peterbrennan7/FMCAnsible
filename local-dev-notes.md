@@ -50,3 +50,11 @@ To connect to debugger in container from local machine (can also use other epdb 
 ```
 python -c "import epdb; epdb.connect(host='localhost', port=8080)"
 ```
+
+
+Other resources for debugging info of Ansible modules:
+https://cn-ansibledoc.readthedocs.io/zh_CN/latest/dev_guide/debugging.html
+https://willtham.es/2017/07/17/so-you-want-to-test-aws-modules-for-ansible.html (troubleshooting section)
+
+Better debugging option natively in VSCode?
+https://gist.github.com/Deepakkothandan/daeb1ba8dc5b73d85ded03cb2a614e85 

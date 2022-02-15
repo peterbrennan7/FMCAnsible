@@ -21,10 +21,14 @@
 
 from __future__ import absolute_import, division, print_function
 
-import epdb;
-epdb.serve(port=8080)
+# import epdb;
+# epdb.serve(port=8080)
 # epdb.set_trace()
 
+import ptvsd
+ptvsd.enable_attach(secret="ansible", address = ('127.0.0.1', 8080))
+ptvsd.wait_for_attach()
+ptvsd.break_into_debugger()
 
 __metaclass__ = type
 

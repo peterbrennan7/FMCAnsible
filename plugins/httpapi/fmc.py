@@ -20,6 +20,13 @@
 
 from __future__ import (absolute_import, division, print_function)
 
+import debugpy
+
+# 5678 is the default attach port in the VS Code debug configurations. Unless a host and port are specified, host defaults to 127.0.0.1
+
+
+print('break on this line')
+
 __metaclass__ = type
 
 DOCUMENTATION = """
@@ -53,7 +60,7 @@ import re
 import logging
 logger = logging.getLogger(__name__)
 
-logging.basicConfig(filename="fmc.log",
+logging.basicConfig(filename="/fmc-ansible/fmc2.log",
                             filemode='a',
                             format='%(asctime)s,%(msecs)d %(name)s %(levelname)s %(message)s',
                             datefmt='%H:%M:%S',
@@ -368,8 +375,8 @@ class HttpApi(HttpApiBase):
 
     def get_operation_spec(self, operation_name):
         logging.debug("enter get_operation_spec")
-        logging.debug('all_api_spec:')
-        logging.debug(self.api_spec) 
+        # with open('/fmc-ansible/data.json', 'w', encoding='utf-8') as f:
+        #     json.dump(self.api_spec, f, ensure_ascii=False, indent=4)
         return self.api_spec[SpecProp.OPERATIONS].get(operation_name, None)
 
     def get_operation_specs_by_model_name(self, model_name):
